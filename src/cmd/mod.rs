@@ -10,6 +10,9 @@ use std::env;
 use std::sync::{Mutex, RwLock};
 use time_graph;
 
+pub mod omatrix_display_banner;
+pub mod omatrix_version;
+
 lazy_static! {
     pub static ref CLI: Mutex<Cli> = {
         let e: Mutex<Cli> = Mutex::new(Cli::parse());
@@ -47,8 +50,14 @@ pub fn main() {
     log::debug!("OMATRIX tool context initialized ...");
 
     if cli.profile {
-        log::debug!("Enable JBUND profiler");
+        log::debug!("Enable OMATRIX profiler");
         time_graph::enable_data_collection(true);
+    }
+
+    match &cli.command {
+        Commands::Version(_) => {
+            omatrix_version::run(&cli);
+        }
     }
 
     if cli.profile {
@@ -56,6 +65,11 @@ pub fn main() {
         let graph = time_graph::get_full_graph();
         println!("{}", graph.as_table());
     }
+}
+
+#[derive(Subcommand, Clone, Debug)]
+enum Commands {
+    Version(Version),
 }
 
 #[derive(Parser, Clone, Debug)]
@@ -74,4 +88,14 @@ pub struct Cli {
 
     #[clap(long, action = clap::ArgAction::SetTrue, help="Execute internal profiler")]
     pub profile: bool,
+
+    #[clap(help = "Full path to the OMATRIX storage", long)]
+    pub store_path: Option<String>,
+
+    #[clap(subcommand, help = "OMATRIX subcommands")]
+    command: Commands,
 }
+
+#[derive(Args, Clone, Debug)]
+#[clap(about = "Get the version of the OMATRIX")]
+pub struct Version {}
