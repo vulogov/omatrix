@@ -11,6 +11,7 @@ use std::sync::{Mutex, RwLock};
 use time_graph;
 
 pub mod omatrix_display_banner;
+pub mod omatrix_serve;
 pub mod omatrix_version;
 
 lazy_static! {
@@ -45,6 +46,7 @@ pub fn main() {
         build::COMMIT_HASH,
         build::BUILD_TIME
     );
+    log::debug!("BUNDCORE version: {}", bundcore::version());
     log::debug!("Initialize global CLI");
     drop(init_cli);
     log::debug!("OMATRIX tool context initialized ...");
@@ -55,6 +57,9 @@ pub fn main() {
     }
 
     match &cli.command {
+        Commands::Serve(serve) => {
+            omatrix_serve::run(&cli, serve.clone());
+        }
         Commands::Version(_) => {
             omatrix_version::run(&cli);
         }
@@ -70,6 +75,7 @@ pub fn main() {
 #[derive(Subcommand, Clone, Debug)]
 enum Commands {
     Version(Version),
+    Serve(Serve),
 }
 
 #[derive(Parser, Clone, Debug)]
@@ -94,6 +100,16 @@ pub struct Cli {
 
     #[clap(subcommand, help = "OMATRIX subcommands")]
     command: Commands,
+}
+
+#[derive(Args, Clone, Debug)]
+#[clap(about = "Start OMATRIX server")]
+pub struct Serve {
+    #[clap(help = "BIND address for JSON/RPC service", long)]
+    pub bind_addr: Option<String>,
+
+    #[clap(help = "Number of threads", long, default_value_t = 4)]
+    pub threads: u16,
 }
 
 #[derive(Args, Clone, Debug)]

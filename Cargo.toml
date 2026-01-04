@@ -24,4 +24,8 @@ jsonrpc-http-server = "15.0"
 ctrlc = "3.5.1"
 comfy-table = "7.2.1"
 shadow-rs = "1.5.0"
+rust_dynamic = "0.*.*"
+bund_language_parser = ">=0.*.*"
+bundcore = ">=0.*.*"
+rust_multistackvm = ">=0.*.*"
 duckdb = { version = "1.4.0", features = ["bundled", "modern-full", "parquet", "json"] }
