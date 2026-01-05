@@ -26,14 +26,6 @@ pub fn init_api(io: &mut IoHandler) {
             "bund_language_parser".to_string(),
             Value::String(bund_language_parser::version().into()),
         );
-        result.insert(
-            "build.branch".to_string(),
-            Value::String(format!("{}", shadow_rs::BRANCH)),
-        );
-        result.insert(
-            "build.commit_date".to_string(),
-            Value::String(format!("{}", shadow_rs::COMMIT_DATE)),
-        );
         Ok(Value::Object(result))
     });
 }
