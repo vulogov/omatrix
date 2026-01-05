@@ -7,7 +7,7 @@ pub mod setloglevel;
 use clap::{Args, Parser, Subcommand};
 use lazy_static::lazy_static;
 use std::env;
-use std::sync::{Mutex, RwLock};
+use std::sync::Mutex;
 use time_graph;
 
 pub mod omatrix_display_banner;

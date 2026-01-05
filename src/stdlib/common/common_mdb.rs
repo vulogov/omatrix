@@ -33,11 +33,35 @@ impl MATRIXDB {
                 bail!("{}", err);
             }
         };
+        let _ = match self.init_data_tables() {
+            Ok(_) => {}
+            Err(err) => {
+                bail!("{}", err);
+            }
+        };
+        let _ = match self.init_catalog_tables() {
+            Ok(_) => {}
+            Err(err) => {
+                bail!("{}", err);
+            }
+        };
         Ok(())
     }
 
     pub fn recreate_table_structure(&mut self) -> Result<(), Error> {
         let _ = match self.recreate_metadata_tables() {
+            Ok(_) => {}
+            Err(err) => {
+                bail!("{}", err);
+            }
+        };
+        let _ = match self.recreate_data_tables() {
+            Ok(_) => {}
+            Err(err) => {
+                bail!("{}", err);
+            }
+        };
+        let _ = match self.recreate_catalog_tables() {
             Ok(_) => {}
             Err(err) => {
                 bail!("{}", err);
