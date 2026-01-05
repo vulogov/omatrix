@@ -1,5 +1,6 @@
 use jsonrpc_core::*;
 use jsonrpc_http_server::*;
+use serde_json::{Map, Value};
 
 pub fn init_api(io: &mut IoHandler) {
     log::debug!("Initializing JSON/RPC API version v1");
@@ -7,7 +8,32 @@ pub fn init_api(io: &mut IoHandler) {
         log::debug!("Received ping request on JSON/RPC server");
         Ok(Value::String("pong".to_string()))
     });
-    io.add_method("v1/version.server", |_params: Params| {
-        Ok(Value::String(env!("CARGO_PKG_VERSION").into()))
+    io.add_method("v1/version", |_params: Params| {
+        let mut result: Map<String, Value> = Map::new();
+        result.insert(
+            "omatrix".to_string(),
+            Value::String(env!("CARGO_PKG_VERSION").into()),
+        );
+        result.insert(
+            "bundcore".to_string(),
+            Value::String(bundcore::version().into()),
+        );
+        result.insert(
+            "rust_dynamic".to_string(),
+            Value::String(rust_dynamic::version().into()),
+        );
+        result.insert(
+            "bund_language_parser".to_string(),
+            Value::String(bund_language_parser::version().into()),
+        );
+        result.insert(
+            "build.branch".to_string(),
+            Value::String(format!("{}", shadow_rs::BRANCH)),
+        );
+        result.insert(
+            "build.commit_date".to_string(),
+            Value::String(format!("{}", shadow_rs::COMMIT_DATE)),
+        );
+        Ok(Value::Object(result))
     });
 }
