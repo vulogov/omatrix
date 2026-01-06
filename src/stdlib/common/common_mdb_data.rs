@@ -4,8 +4,9 @@ use crate::stdlib::common::MATRIXDB;
 use easy_error::{Error, bail};
 
 const DATA_CREATE: &str = r#"
+CREATE SEQUENCE data_seq;
 CREATE TABLE IF NOT EXISTS  Data (
-    seq         INTEGER PRIMARY KEY AUTOINCREMENT,
+    seq         INTEGER PRIMARY KEY DEFAULT nextval('data_seq'),
     timestamp   FLOAT,
     id          STRING,
     data        BLOB
@@ -18,6 +19,7 @@ const DATA_DROP_RAW_TABLE: &str = r#"
 DROP TABLE IF EXISTS Data;
 DROP INDEX IF EXISTS data_idx1;
 DROP INDEX IF EXISTS data_idx2;
+DROP SEQUENCE IF EXISTS data_seq;
 "#;
 
 impl MATRIXDB {

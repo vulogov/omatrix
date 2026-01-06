@@ -56,6 +56,30 @@ pub fn main() {
         time_graph::enable_data_collection(true);
     }
 
+    let db = match crate::stdlib::DB.read() {
+        Ok(db) => db,
+        Err(e) => panic!("Unable to read lock database: {}", e),
+    };
+    drop(db);
+    log::debug!("Read lock database: success");
+    let db = match crate::stdlib::DB.write() {
+        Ok(db) => db,
+        Err(e) => panic!("Unable to read lock database: {}", e),
+    };
+    log::debug!("Write lock database: success");
+    if cli.new_database {
+        log::debug!("Re-initialize the database");
+        match db.reinitialize() {
+            Ok(_) => {}
+            Err(err) => {
+                drop(db);
+                log::error!("{}", err);
+                return;
+            }
+        }
+    }
+    drop(db);
+
     match &cli.command {
         Commands::Serve(serve) => {
             omatrix_serve::run(&cli, serve.clone());
@@ -97,6 +121,9 @@ pub struct Cli {
 
     #[clap(help = "Full path to the OMATRIX storage", long)]
     pub store_path: Option<String>,
+
+    #[clap(long, action = clap::ArgAction::SetTrue, help="Re-initialize the database")]
+    pub new_database: bool,
 
     #[clap(subcommand, help = "OMATRIX subcommands")]
     command: Commands,
